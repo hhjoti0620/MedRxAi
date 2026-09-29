@@ -1,0 +1,9 @@
+Flask
+Werkzeug
+numpy
+pandas
+opencv-python
+ultralytics
+paddleocr
+paddlepaddle
+Pillow

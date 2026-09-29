@@ -1,843 +1,470 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <title>MedRxAI | Prescription Intelligence</title>
 
-    <title>MedRxAI | Prescription Analyzer</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
-
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 
 <body>
 
-
-<!-- ======================================================
+<!-- =========================
      NAVBAR
-====================================================== -->
-
+========================= -->
 <nav class="navbar">
 
-    <div class="nav-container">
+    <div class="logo">
+        <span class="logo-icon">✚</span>
+        <span>MedRxAI</span>
+    </div>
 
-        <div class="logo">
-
-            <span class="logo-icon">✚</span>
-
-            <span>MedRxAI</span>
-
-        </div>
-
-        <div class="nav-text">
-
-            AI Prescription Analysis
-
-        </div>
-
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#models">Models</a>
+        <a href="#database">DGDA Database</a>
     </div>
 
 </nav>
 
 
-<!-- ======================================================
-     MAIN
-====================================================== -->
+<!-- =========================
+     HERO SECTION
+========================= -->
+<section class="hero" id="home">
 
-<main class="container">
+    <div class="hero-content">
 
-
-    <!-- HERO -->
-
-    <section class="hero">
-
-        <div class="badge">
-            AI-POWERED RESEARCH PROTOTYPE
-        </div>
+        <span class="badge">
+            AI-Powered Prescription Analysis
+        </span>
 
         <h1>
-            Prescription Medicine
-            <span>Extraction</span>
+            Intelligent Medicine<br>
+            <span>Extraction & Analysis</span>
         </h1>
 
         <p>
-            Upload a prescription image and extract
-            medicine names using YOLO detection,
-            OCR and DGDA database matching.
+            Upload a handwritten prescription and use our trained
+            deep-learning models to detect prescription regions and
+            extract medicine information.
         </p>
 
-    </section>
+        <a href="#models" class="primary-btn">
+            Try the Models ↓
+        </a>
+
+    </div>
+
+</section>
 
 
-    <!-- FLASH MESSAGES -->
+<!-- =========================
+     MODEL SECTION
+========================= -->
+<section class="models-section" id="models">
 
-    {% with messages = get_flashed_messages() %}
+    <div class="section-header">
 
-        {% if messages %}
+        <span class="section-label">
+            MODEL INFERENCE
+        </span>
 
-            <div class="flash-container">
+        <h2>
+            Choose a Model
+        </h2>
 
-                {% for message in messages %}
+        <p>
+            Upload your prescription image and run either of the
+            trained YOLO models independently.
+        </p>
 
-                    <div class="flash">
+    </div>
 
-                        {{ message }}
 
-                    </div>
+    <div class="model-grid">
 
-                {% endfor %}
 
+        <!-- =========================
+             MODEL 1
+        ========================== -->
+
+        <div class="model-card">
+
+            <div class="model-number">
+                01
             </div>
 
-        {% endif %}
-
-    {% endwith %}
-
-
-    <!-- ==================================================
-         SYSTEM STATUS
-    =================================================== -->
-
-    <section class="status-grid">
-
-        <div class="status-card">
-
-            <span class="status-dot
-                {% if model_status.model1 %}
-                    online
-                {% endif %}
-            "></span>
-
-            <div>
-
-                <strong>Model 1</strong>
-
-                <small>
-
-                    {% if model_status.model1 %}
-                        Available
-                    {% else %}
-                        Missing
-                    {% endif %}
-
-                </small>
-
+            <div class="model-icon">
+                🔍
             </div>
 
-        </div>
+            <h3>
+                Prescription Detector
+            </h3>
 
+            <p class="model-description">
+                Detect prescription regions and relevant areas
+                from the uploaded prescription image.
+            </p>
 
-        <div class="status-card">
-
-            <span class="status-dot
-                {% if model_status.model2 %}
-                    online
-                {% endif %}
-            "></span>
-
-            <div>
-
-                <strong>Model 2</strong>
-
-                <small>
-
-                    {% if model_status.model2 %}
-                        Available
-                    {% else %}
-                        Missing
-                    {% endif %}
-
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <div class="status-card">
-
-            <span class="status-dot
-                {% if model_status.ocr %}
-                    online
-                {% endif %}
-            "></span>
-
-            <div>
-
-                <strong>PaddleOCR</strong>
-
-                <small>
-
-                    {% if model_status.ocr %}
-                        Ready
-                    {% else %}
-                        Failed
-                    {% endif %}
-
-                </small>
-
-            </div>
-
-        </div>
-
-
-        <div class="status-card">
-
-            <span class="status-dot
-                {% if model_status.database %}
-                    online
-                {% endif %}
-            "></span>
-
-            <div>
-
-                <strong>Medicine DB</strong>
-
-                <small>
-
-                    {% if model_status.database %}
-                        Loaded
-                    {% else %}
-                        Missing
-                    {% endif %}
-
-                </small>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ==================================================
-         UPLOAD CARD
-    =================================================== -->
-
-    <section class="upload-card">
-
-        <form
-            action="{{ url_for('analyze') }}"
-            method="POST"
-            enctype="multipart/form-data"
-            id="analyzeForm"
-        >
-
-
-            <!-- MODEL SELECT -->
-
-            <div class="section-title">
-
-                <div class="number">
-                    01
-                </div>
-
-                <div>
-
-                    <h2>
-                        Select Detection Model
-                    </h2>
-
-                    <p>
-                        Choose which trained YOLO model
-                        you want to test.
-                    </p>
-
-                </div>
-
+            <div class="model-file">
+                <span>Model</span>
+                <code>best_detector_768_tuned.pt</code>
             </div>
 
 
-            <div class="model-selection">
+            <!-- Upload -->
 
-
-                <label class="model-option">
-
-                    <input
-                        type="radio"
-                        name="model"
-                        value="model1"
-                        {% if model_status.model1 %}
-                            checked
-                        {% endif %}
-                    >
-
-                    <div class="model-content">
-
-                        <div class="model-title">
-
-                            Model 1
-
-                            {% if model_status.model1 %}
-
-                                <span class="available">
-                                    Available
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-                        <div class="model-file">
-
-                            best_detector_768_tuned.pt
-
-                        </div>
-
-                    </div>
-
-                </label>
-
-
-                <label class="model-option">
-
-                    <input
-                        type="radio"
-                        name="model"
-                        value="model2"
-                        {% if not model_status.model1 and model_status.model2 %}
-                            checked
-                        {% endif %}
-                    >
-
-                    <div class="model-content">
-
-                        <div class="model-title">
-
-                            Model 2
-
-                            {% if model_status.model2 %}
-
-                                <span class="available">
-                                    Available
-                                </span>
-
-                            {% endif %}
-
-                        </div>
-
-                        <div class="model-file">
-
-                            best_rx_detector_tuned.pt
-
-                        </div>
-
-                    </div>
-
-                </label>
-
-            </div>
-
-
-            <!-- UPLOAD -->
-
-            <div class="section-title upload-title">
-
-                <div class="number">
-                    02
-                </div>
-
-                <div>
-
-                    <h2>
-                        Upload Prescription
-                    </h2>
-
-                    <p>
-                        JPG, JPEG, PNG or WEBP
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="drop-zone"
-                id="dropZone"
-            >
+            <div class="upload-area"
+                 id="upload-area-1">
 
                 <input
                     type="file"
-                    name="prescription"
-                    id="prescription"
-                    accept=".jpg,.jpeg,.png,.webp"
+                    id="image-input-1"
+                    accept="image/png,image/jpeg,image/jpg"
                     hidden
-                    required
                 >
 
+                <label for="image-input-1"
+                       class="upload-label">
 
-                <div
-                    class="upload-icon"
-                    id="uploadIcon"
-                >
-                    ↑
-                </div>
+                    <div class="upload-icon">
+                        📤
+                    </div>
 
+                    <strong>
+                        Upload Prescription
+                    </strong>
 
-                <h3 id="uploadTitle">
+                    <span>
+                        PNG, JPG or JPEG
+                    </span>
 
-                    Drag & Drop your prescription
-
-                </h3>
-
-
-                <p id="uploadText">
-
-                    or click here to browse files
-
-                </p>
-
-
-                <div
-                    class="file-name"
-                    id="fileName"
-                ></div>
+                </label>
 
             </div>
 
 
-            <!-- PREVIEW -->
+            <!-- Selected file -->
 
-            <div
-                class="preview-container"
-                id="previewContainer"
-            >
+            <div class="file-info"
+                 id="file-info-1"
+                 style="display:none;">
 
-                <img
-                    id="imagePreview"
-                    alt="Prescription Preview"
-                >
+                <span id="file-name-1"></span>
+
+                <button
+                    type="button"
+                    onclick="removeFile(1)">
+                    ✕
+                </button>
 
             </div>
 
 
-            <!-- BUTTON -->
+            <!-- Run button -->
 
             <button
-                type="submit"
-                class="analyze-button"
-                id="analyzeButton"
-            >
+                type="button"
+                class="run-btn"
+                id="run-btn-1"
+                onclick="runModel(1)">
 
-                <span>
-                    Analyze Prescription
-                </span>
-
-                <span class="arrow">
-                    →
-                </span>
+                Run Model 1
 
             </button>
 
 
-        </form>
+            <!-- Loading -->
 
-    </section>
+            <div
+                class="loading"
+                id="loading-1"
+                style="display:none;">
 
-
-    <!-- ==================================================
-         RESULT
-    =================================================== -->
-
-    {% if result %}
-
-    <section class="results-section">
-
-
-        <!-- RESULT HEADER -->
-
-        <div class="result-header">
-
-            <div>
-
-                <div class="badge">
-                    ANALYSIS COMPLETE
-                </div>
-
-                <h2>
-                    Prescription Results
-                </h2>
-
-                <p>
-
-                    Processed using
-                    <strong>
-                        {{ result.model_name }}
-                    </strong>
-
-                </p>
-
-            </div>
-
-
-            <div class="detection-count">
-
-                <strong>
-                    {{ result.detected_count }}
-                </strong>
+                <div class="spinner"></div>
 
                 <span>
-                    detected regions
+                    Processing prescription...
                 </span>
 
             </div>
 
-        </div>
 
+            <!-- Result -->
 
-        {% if result.success %}
+            <div
+                class="result-container"
+                id="result-1"
+                style="display:none;">
 
+                <h4>
+                    Detection Result
+                </h4>
 
-        <!-- IMAGE -->
-
-        <div class="result-image-card">
-
-            <div class="result-card-title">
-
-                Detected Prescription
-
-            </div>
-
-            <img
-                src="{{ url_for(
-                    'static',
-                    filename='result_placeholder'
-                ) }}"
-                style="display:none;"
-            >
-
-            <img
-                class="annotated-image"
-                src="{{ url_for(
-                    'static',
-                    filename='../../results/' + result.annotated_image
-                ) }}"
-                alt="Annotated prescription"
-            >
-
-        </div>
-
-
-        <!-- MEDICINE TABLE -->
-
-        <div class="result-card">
-
-            <div class="result-card-title">
-
-                Medicine Extraction & DGDA Matching
-
-            </div>
-
-
-            {% if result.clinical_report %}
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>ROI</th>
-
-                            <th>OCR Text</th>
-
-                            <th>OCR Conf.</th>
-
-                            <th>Matched Brand</th>
-
-                            <th>Generic</th>
-
-                            <th>Strength</th>
-
-                            <th>Manufacturer</th>
-
-                            <th>Similarity</th>
-
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                    {% for item in result.clinical_report %}
-
-                        <tr>
-
-                            <td>
-                                {{ item.roi }}
-                            </td>
-
-                            <td>
-
-                                <strong>
-                                    {{ item.raw_ocr }}
-                                </strong>
-
-                                {% if item.corrected %}
-
-                                    <small class="corrected">
-
-                                        Corrected:
-                                        {{ item.corrected }}
-
-                                    </small>
-
-                                {% endif %}
-
-                            </td>
-
-                            <td>
-                                {{ item.ocr_conf }}%
-                            </td>
-
-                            <td class="brand-cell">
-
-                                {{ item.brand }}
-
-                            </td>
-
-                            <td>
-
-                                {{ item.generic }}
-
-                            </td>
-
-                            <td>
-
-                                {{ item.strength }}
-
-                            </td>
-
-                            <td>
-
-                                {{ item.manufacturer }}
-
-                            </td>
-
-                            <td>
-
-                                <div class="similarity">
-
-                                    <div
-                                        class="similarity-bar"
-                                        style="width: {{ item.similarity }}%;"
-                                    ></div>
-
-                                    <span>
-                                        {{ item.similarity }}%
-                                    </span>
-
-                                </div>
-
-                            </td>
-
-                            <td>
-
-                                {% if item.status == "Confirmed Match" %}
-
-                                    <span class="status confirmed">
-                                        ✓ Confirmed
-                                    </span>
-
-                                {% elif "Invalid" in item.status %}
-
-                                    <span class="status rejected">
-                                        Invalid
-                                    </span>
-
-                                {% else %}
-
-                                    <span class="status warning">
-                                        Possible Match
-                                    </span>
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                    {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            {% else %}
-
-                <div class="empty-result">
-
-                    No medicine text could be extracted.
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-
-        <!-- ALTERNATIVES -->
-
-        {% if result.alternatives_report %}
-
-        <div class="result-card">
-
-            <div class="result-card-title">
-
-                Alternative Brands from Database
-
-            </div>
-
-
-            <div class="alternative-grid">
-
-                {% for item in result.alternatives_report %}
-
-                <div class="alternative-card">
-
-                    <div class="alternative-brand">
-
-                        {{ item.brand }}
-
-                    </div>
-
-                    <div class="alternative-generic">
-
-                        {{ item.generic }}
-
-                    </div>
-
-
-                    {% if item.alternatives %}
-
-                    <div class="alternative-list">
-
-                        <span>
-                            Other brands:
-                        </span>
-
-                        <div>
-
-                        {% for brand in item.alternatives %}
-
-                            <span class="medicine-chip">
-
-                                {{ brand }}
-
-                            </span>
-
-                        {% endfor %}
-
-                        </div>
-
-                    </div>
-
-                    {% else %}
-
-                    <div class="no-alternative">
-
-                        No alternatives found
-
-                    </div>
-
-                    {% endif %}
-
-                </div>
-
-                {% endfor %}
+                <img
+                    id="result-image-1"
+                    src=""
+                    alt="Detection Result">
 
             </div>
 
         </div>
 
-        {% endif %}
 
 
-        {% else %}
+        <!-- =========================
+             MODEL 2
+        ========================== -->
 
-            <div class="no-detection">
+        <div class="model-card">
 
-                <div class="big-icon">
-                    !
-                </div>
+            <div class="model-number">
+                02
+            </div>
 
-                <h3>
-                    No medicine region detected
-                </h3>
+            <div class="model-icon">
+                💊
+            </div>
 
-                <p>
-                    Try another prescription image or
-                    test the other detection model.
-                </p>
+            <h3>
+                Medicine Detector
+            </h3>
+
+            <p class="model-description">
+                Detect medicine-related regions from the prescription
+                using the trained medicine detection model.
+            </p>
+
+            <div class="model-file">
+                <span>Model</span>
+                <code>best_rx_detector_tuned.pt</code>
+            </div>
+
+
+            <!-- Upload -->
+
+            <div class="upload-area"
+                 id="upload-area-2">
+
+                <input
+                    type="file"
+                    id="image-input-2"
+                    accept="image/png,image/jpeg,image/jpg"
+                    hidden
+                >
+
+                <label for="image-input-2"
+                       class="upload-label">
+
+                    <div class="upload-icon">
+                        📤
+                    </div>
+
+                    <strong>
+                        Upload Prescription
+                    </strong>
+
+                    <span>
+                        PNG, JPG or JPEG
+                    </span>
+
+                </label>
 
             </div>
 
-        {% endif %}
+
+            <!-- Selected file -->
+
+            <div class="file-info"
+                 id="file-info-2"
+                 style="display:none;">
+
+                <span id="file-name-2"></span>
+
+                <button
+                    type="button"
+                    onclick="removeFile(2)">
+                    ✕
+                </button>
+
+            </div>
 
 
-    </section>
+            <!-- Run button -->
 
-    {% endif %}
+            <button
+                type="button"
+                class="run-btn"
+                id="run-btn-2"
+                onclick="runModel(2)">
+
+                Run Model 2
+
+            </button>
 
 
-    <!-- DISCLAIMER -->
+            <!-- Loading -->
 
-    <section class="disclaimer">
+            <div
+                class="loading"
+                id="loading-2"
+                style="display:none;">
 
-        <strong>
-            Research Prototype
-        </strong>
+                <div class="spinner"></div>
+
+                <span>
+                    Processing prescription...
+                </span>
+
+            </div>
+
+
+            <!-- Result -->
+
+            <div
+                class="result-container"
+                id="result-2"
+                style="display:none;">
+
+                <h4>
+                    Detection Result
+                </h4>
+
+                <img
+                    id="result-image-2"
+                    src=""
+                    alt="Detection Result">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     DGDA DATABASE SECTION
+========================= -->
+
+<section class="database-section"
+         id="database">
+
+    <div class="database-content">
+
+        <span class="section-label">
+            MEDICINE KNOWLEDGE BASE
+        </span>
+
+        <h2>
+            DGDA Medicine Database
+        </h2>
 
         <p>
-
-            This application is intended for research
-            and demonstration purposes. OCR and database
-            matching results should be manually verified
-            by a qualified healthcare professional.
-
+            Detected medicine names can be matched against the
+            registered medicine database to identify generic names,
+            strength, dosage form and manufacturer information.
         </p>
 
-    </section>
+
+        <div class="database-features">
+
+            <div class="db-feature">
+                <span>✓</span>
+                <div>
+                    <strong>
+                        Brand Name Matching
+                    </strong>
+
+                    <small>
+                        Match extracted medicine names with
+                        registered brands.
+                    </small>
+                </div>
+            </div>
 
 
-</main>
+            <div class="db-feature">
+                <span>✓</span>
+                <div>
+                    <strong>
+                        Generic Identification
+                    </strong>
 
+                    <small>
+                        Retrieve the corresponding generic medicine.
+                    </small>
+                </div>
+            </div>
+
+
+            <div class="db-feature">
+                <span>✓</span>
+                <div>
+                    <strong>
+                        Manufacturer Information
+                    </strong>
+
+                    <small>
+                        Identify the registered manufacturer.
+                    </small>
+                </div>
+            </div>
+
+
+            <div class="db-feature">
+                <span>✓</span>
+                <div>
+                    <strong>
+                        Strength & Dosage
+                    </strong>
+
+                    <small>
+                        Retrieve formulation details.
+                    </small>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
+    <div class="footer-logo">
+        ✚ MedRxAI
+    </div>
+
     <p>
-        © 2026 MedRxAI · Research Prototype
+        Deep Learning-Based Bilingual Medicine Extraction
+        and Alternative Drug Recommendation
+    </p>
+
+    <p class="copyright">
+        © 2026 MedRxAI
     </p>
 
 </footer>
 
 
-<script
-    src="{{ url_for(
-        'static',
-        filename='js/script.js'
-    ) }}"
-></script>
-
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
-
 </html>
+```
